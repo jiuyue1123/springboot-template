@@ -49,7 +49,7 @@ public class GlobalCorsConfig implements WebMvcConfigurer {
         // 配置所有接口的跨域规则（也可指定特定路径，如 /api/**）
         registry.addMapping("/**")
                 // 允许的域名（拆分多域名）
-                .allowedOrigins(ALLOWED_ORIGINS.split(","))
+                .allowedOriginPatterns(ALLOWED_ORIGINS.split(","))
                 // 允许的请求方法
                 .allowedMethods(ALLOWED_METHODS.split(","))
                 // 允许的请求头

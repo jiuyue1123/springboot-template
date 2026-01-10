@@ -77,6 +77,7 @@ src/main/java/org/example/
 │   └── WebMvcConfig.java  # WebMvc配置
 ├── constant/              # 常量定义
 ├── controller/            # 控制器层
+│   └── HelloController.java   # 示例控制器（展示各种功能）
 ├── enums/                 # 枚举类
 │   └── ErrorCode.java     # 错误码枚举
 ├── exception/             # 异常处理
@@ -132,6 +133,7 @@ java -jar target/springboot-template-0.0.1-SNAPSHOT.jar --spring.profiles.active
 - 应用地址：http://localhost:8081
 - API文档：http://localhost:8081/swagger-ui.html
 - 健康检查：http://localhost:8081/actuator/health
+- 示例接口：http://localhost:8081/api/hello
 
 ## ⚙️ 配置说明
 
@@ -167,6 +169,19 @@ aes:
 - 访问地址：http://localhost:8081/swagger-ui.html
 - 支持在线调试
 - 自动生成接口文档
+
+### 示例接口
+
+项目提供了完整的示例接口 `HelloController`，展示了所有核心功能：
+
+- `GET /api/hello` - 基础接口，展示统一响应格式和链路追踪
+- `GET /api/hello/tools` - 工具类功能展示
+- `POST /api/hello/validate` - 参数验证展示
+- `GET /api/hello/error/business` - 业务异常处理展示
+- `GET /api/hello/error/runtime` - 运行时异常处理展示
+- `GET /api/hello/error/validation` - 参数校验异常展示
+- `GET /api/hello/trace` - 链路追踪功能展示
+- `GET /api/hello/health` - 健康检查接口
 
 ## 💻 开发指南
 
