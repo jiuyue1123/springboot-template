@@ -47,6 +47,7 @@
 - **应用监控**：集成 Spring Boot Actuator，提供健康检查和应用监控
 - **优雅停机**：支持优雅关闭，确保请求处理完成后再停止服务，仅处理 Web 容器，生产环境需手动关闭自定义资源（如线程池、消息队列消费者、定时任务），通过 `@PreDestroy` 或 `SmartLifecycle` 实现。
 - **跨域处理**：全局CORS配置，支持自定义允许的域名、请求方法、请求头
+- **异步处理**：集成自定义线程池配置，支持 @Async 异步方法调用，包含异常处理和优雅关闭
 
 ### 🔧 内置工具类
 
@@ -62,6 +63,10 @@
 
 - **TraceIdInterceptor**：MDC链路追踪拦截器，自动生成和管理请求链路ID
 
+### ⚡ 异步处理组件
+
+- **AsyncGlobalConfig**：自定义线程池配置，支持异步方法调用和异常处理
+
 ### 📝 自定义验证器
 
 - **@Mobile**：手机号格式验证
@@ -73,8 +78,9 @@
 ```
 src/main/java/org/example/
 ├── config/                 # 配置类
-│   ├── GlobalCorsConfig.java  # 全局跨域配置config/                
-│   └── WebMvcConfig.java  # WebMvc配置
+│   ├── AsyncGlobalConfig.java # 异步线程池配置
+│   ├── GlobalCorsConfig.java  # 全局跨域配置
+│   └── WebMvcConfig.java      # Web MVC配置（拦截器注册）
 ├── constant/              # 常量定义
 ├── controller/            # 控制器层
 │   └── HelloController.java   # 示例控制器（展示各种功能）
@@ -287,6 +293,73 @@ public class ExternalService {
         headers.set("traceId", traceId);
         
         // 发起HTTP请求...
+    }
+}
+```
+
+### 异步处理使用
+
+项目集成了自定义线程池配置，支持高效的异步方法调用：
+
+```java
+// 在Service类中使用异步方法
+@Service
+public class UserService {
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+    
+    @Async
+    public void sendEmailAsync(String email, String content) {
+        // 异步发送邮件，不阻塞主线程
+        log.info("开始异步发送邮件到: {}", email);
+        
+        try {
+            // 模拟邮件发送耗时操作
+            Thread.sleep(2000);
+            log.info("邮件发送成功: {}", email);
+        } catch (Exception e) {
+            log.error("邮件发送失败: {}", email, e);
+            // 异常会被AsyncGlobalConfig中的异常处理器捕获
+        }
+    }
+    
+    @Async
+    public CompletableFuture<String> processDataAsync(String data) {
+        // 异步处理数据并返回结果
+        log.info("开始异步处理数据: {}", data);
+        
+        try {
+            // 模拟数据处理
+            Thread.sleep(1000);
+            String result = "处理完成: " + data;
+            log.info("数据处理完成: {}", result);
+            return CompletableFuture.completedFuture(result);
+        } catch (Exception e) {
+            log.error("数据处理失败: {}", data, e);
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+}
+
+// 在Controller中调用异步方法
+@RestController
+public class AsyncController {
+    
+    @Autowired
+    private UserService userService;
+    
+    @PostMapping("/send-email")
+    public Result<String> sendEmail(@RequestParam String email) {
+        // 异步发送邮件，立即返回
+        userService.sendEmailAsync(email, "欢迎使用我们的服务！");
+        return Result.success("邮件发送请求已提交");
+    }
+    
+    @PostMapping("/process-data")
+    public Result<String> processData(@RequestParam String data) throws Exception {
+        // 异步处理数据并等待结果
+        CompletableFuture<String> future = userService.processDataAsync(data);
+        String result = future.get(5, TimeUnit.SECONDS); // 最多等待5秒
+        return Result.success(result);
     }
 }
 ```
