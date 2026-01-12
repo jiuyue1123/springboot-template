@@ -10,51 +10,6 @@ server:
     connection-timeout: 5000 # 5秒
     max-http-form-post-size: 10MB # 限制POST请求体大小，防止大请求攻击
     max-swallow-size: 2MB # 限制未读取的请求体大小，避免内存泄露
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:springboot_demo}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=true&verifyServerCertificate=false&allowPublicKeyRetrieval=false&connectTimeout=3000&socketTimeout=60000&autoReconnect=true&failOverReadOnly=false&maxReconnects=3
-    username: ${DB_USER:root} # 要使用最小权限账号
-    password: ${DB_PASSWORD:root}
-    druid:
-      # 连接池基础参数
-      initial-size: 10            # 初始连接数（根据QPS调整，建议10-20）
-      min-idle: 10                # 最小空闲连接数（不低于initial-size）
-      max-active: 50              # 最大活跃连接数（根据数据库性能调整，建议50-100）
-      max-wait: 60000             # 获取连接最大等待时间（60秒，超时抛异常）
-      time-between-eviction-runs-millis: 60000  # 检测空闲连接的间隔时间
-      min-evictable-idle-time-millis: 300000    # 连接最小空闲时间（5分钟，超时回收）
-      max-evictable-idle-time-millis: 86400000  # 连接最大空闲时间（1天，强制回收）
-
-      # 连接有效性校验（关键，防止无效连接）
-      test-while-idle: true       # 空闲时校验连接是否有效
-      test-on-borrow: false       # 获取连接时不校验（提升性能，靠test-while-idle兜底）
-      test-on-return: false       # 归还连接时不校验
-      validation-query: SELECT 1  # 校验SQL（MySQL通用）
-      validation-query-timeout: 3 # 校验超时时间
-
-      # 连接泄露监控
-      remove-abandoned: false      # 关闭泄露连接回收
-      remove-abandoned-timeout-millis: 1800000  # 泄露连接超时30分钟
-      log-abandoned: true         # 记录泄露连接日志（便于排查）
-
-      # 监控统计（生产环境建议开启，便于运维）
-      stat-view-servlet:
-        enabled: true             # 开启Druid监控页面
-        login-username: druid_admin  # 监控页面账号
-        login-password: ${DRUID_PASSWORD:xxx} # 监控页面密码（环境变量读取）
-        allow: 127.0.0.1,192.168.0.0/16      # 仅允许内网IP访问监控页面
-        deny: 0.0.0.0/0           # 拒绝所有外部IP
-        url-pattern: /druid/*
-      web-stat-filter:
-        enabled: true             # 开启Web监控
-        url-pattern: /*
-        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
-      filter:
-        wall:
-          enabled: true
-          config:
-            select-all-column-allow: false # 禁止SELECT *（强制显式指定字段）
 
 logging:
   level:

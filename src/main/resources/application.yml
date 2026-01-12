@@ -5,13 +5,6 @@ spring:
     name: springboot-demo
   lifecycle:
     timeout-per-shutdown-phase: 30s
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/springboot_demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: root
-    type: com.alibaba.druid.pool.DruidDataSource
-
 
 server:
   port: 8080
